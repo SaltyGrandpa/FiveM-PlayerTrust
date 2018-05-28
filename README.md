@@ -36,8 +36,8 @@ The Minimum Time a Player should have played Source SDK Base 2007 for them to be
 ### EnableMinimumOwnedGames
 This will Enable or Disable the Minimum Owned Games check, based on total owned games on steam.
 
-## MinimumOwnedGames
+### MinimumOwnedGames
 The Minimum Games a player should own on their Steam Account to be able to join the server.
 
-## MinimumTotalPlaytimeHours
+### MinimumTotalPlaytimeHours
 The Minimum Amount a player should have played games on steam, takes all game playtimes and merges them into one, enter 0 to disable
