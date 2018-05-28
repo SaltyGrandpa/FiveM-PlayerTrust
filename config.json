@@ -1,6 +1,6 @@
 [
 	{
-		"APIKey":"FILL ME IN AT https://steamcommunity.com/dev/apikey",
+		"APIKey":"fillmein",
 		"EnableVACBans":true,
 		"MaxVACCount":2,
 		"MaxDaysSinceLastBan":213,
