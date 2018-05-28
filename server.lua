@@ -91,8 +91,8 @@ Citizen.CreateThread(function()
 		end, 'GET', json.encode({}), { ["Content-Type"] = 'application/json' })
 		
 		local gotOwnedGames = false
-		local ownedGames = false
-		local globalplaytime = false
+		local ownedGames = 0
+		local globalplaytime = 0
 		PerformHttpRequest('http://api.steampowered.com/IPlayerService/GetOwnedGames/v0001/?key='..config.APIKey..'&steamid='..steam64..'´&format=json', function(statusCode, text, headers)
 			if text then
 	        local response = json.decode(text)
