@@ -2,12 +2,13 @@ dots = "hahah im not a dot i have fooled you!!!!1111"
 Citizen.CreateThread(function()
 	config = json.decode( LoadResourceFile(GetCurrentResourceName(), "config.json") )[1]
 	
-	if config.APIKey == "FILL ME IN AT https://steamcommunity.com/dev/apikey" then
-		Citizen.Trace("\n--------------------------------")
-		Citizen.Trace("\nPlayTrust is incorrectly configured! Please enter a Steam API Key in the config.json!")
-		Citizen.Trace("\n--------------------------------\n")
-		return
-	end
+	PerformHttpRequest('http://api.steampowered.com/ISteamUser/GetPlayerBans/v1/?key='..config.APIKey..'&steamids=76561198081509001', function(statusCode, text, headers)
+	    if statusCode == 403 then
+			Citizen.Trace("\n--------------------------------")
+			Citizen.Trace("\nPlayTrust is incorrectly configured!\nPlease verify that your Steam API Key is present/valid!")
+			Citizen.Trace("\n--------------------------------\n")
+	    end
+	end, 'GET', json.encode({}), { ["Content-Type"] = 'application/json' })
 	
 	AddEventHandler('playerConnecting', function(name, setCallback, deferrals)
 
