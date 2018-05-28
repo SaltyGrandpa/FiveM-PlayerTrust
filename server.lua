@@ -108,7 +108,7 @@ Citizen.CreateThread(function()
 						end
 					end
 					
-					if globalplaytime == 0 or not globalplaytime then
+					if not globalplaytime or globalplaytime == 0 then
 						globalplaytime = 9999 -- user game data is private, this is a dirty hack to fix this issue
 					end
 					
