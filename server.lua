@@ -4,9 +4,9 @@ Citizen.CreateThread(function()
 	
 	PerformHttpRequest('http://api.steampowered.com/ISteamUser/GetPlayerBans/v1/?key='..config.APIKey..'&steamids=76561198081509001', function(statusCode, text, headers)
 	    if statusCode == 403 then
-			Citizen.Trace("\n--------------------------------")
-			Citizen.Trace("\nPlayTrust is incorrectly configured!\nPlease verify that your Steam API Key is present/valid!")
-			Citizen.Trace("\n--------------------------------\n")
+				Citizen.Trace("\n--------------------------------")
+				Citizen.Trace("\nPlayTrust is incorrectly configured!\nPlease verify that your Steam API Key is present/valid!")
+				Citizen.Trace("\n--------------------------------\n")
 	    end
 	end, 'GET', json.encode({}), { ["Content-Type"] = 'application/json' })
 	
@@ -44,7 +44,7 @@ Citizen.CreateThread(function()
 		PerformHttpRequest('http://api.steampowered.com/ISteamUser/GetPlayerBans/v1/?key='..config.APIKey..'&steamids='..steam64..'', function(statusCode, text, headers)
 		    if text then
 		        local info = json.decode(text)
-						
+												
 						vacBanned = info['players'][1]['VACBanned']
 		        vacBans = info['players'][1]['NumberOfVACBans']
 
@@ -71,6 +71,7 @@ Citizen.CreateThread(function()
 						else
 							timecreated = false
 						end
+						profileVisibility = info['response']['players'][1]['communityvisibilitystate']
 						gotAccountAge = true
 		    end
 		end, 'GET', json.encode({}), { ["Content-Type"] = 'application/json' })
@@ -138,12 +139,16 @@ Citizen.CreateThread(function()
 			string = string.."[3] Less than "..config.MinimumPlaytimeHours.." hours playtime on FiveM ("..config.MinimumPlaytimeHours-playtime.." hours left)"
 			decline = true
 		end 
-		if config.EnableMinimumOwnedGames and ownedGames < config.MinimumOwnedGames then
+		if config.EnableMinimumOwnedGames and ownedGames and ownedGames < config.MinimumOwnedGames then
 			string = string.."[4] Less than "..config.MinimumOwnedGames.." owned Games on Steam ("..config.MinimumOwnedGames-ownedGames.." games missing)"
 			decline = true
 		end
-		if config.MinimumTotalPlaytimeHours > globalplaytime then
+		if globalplaytime and config.MinimumTotalPlaytimeHours > globalplaytime then
 			string = string.."[5] Less than "..config.MinimumTotalPlaytimeHours.." hours played on Steam ("..config.MinimumTotalPlaytimeHours-globalplaytime.." hours left)"
+			decline = true
+		end
+		if profileVisibility == 1 and (not globalplaytime or not playtime or not timecreated) then
+			string = string.."[6] Steam Account checks Failed, please set your Steam Profile to 'Public' and rejoin the Server."
 			decline = true
 		end
 
