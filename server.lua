@@ -94,18 +94,22 @@ Citizen.CreateThread(function()
 		
 		local gotOwnedGames = false
 		local ownedGames = 0
-		local globalplaytime = 0
+		local globalplaytime = false
 		PerformHttpRequest('http://api.steampowered.com/IPlayerService/GetOwnedGames/v0001/?key='..config.APIKey..'&steamid='..steam64..'´&format=json', function(statusCode, text, headers)
 			if text then
 	        local response = json.decode(text)
 	        local data = response['response']
-					globalplaytime = 0
 					if data.games then
+						globalplaytime = 0
 						for i,a in pairs(data.games) do
 							if a.playtime_forever then
 								globalplaytime = globalplaytime+a.playtime_forever 
 							end
 						end
+					end
+					
+					if globalplaytime == 0 or not globalplaytime then
+						globalplaytime = 9999 -- user game data is private, this is a dirty hack to fix this issue
 					end
 					
 					ownedGames = data.game_count
