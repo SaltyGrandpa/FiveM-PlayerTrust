@@ -1,0 +1,17 @@
+[
+	{
+		"APIKey":"FILL ME IN AT https://steamcommunity.com/dev/apikey",
+		"EnableVACBans":true,
+		"MaxVACCount":2,
+		"MaxDaysSinceLastBan":213,
+		"EnableAccountAgeCheck":true,
+		"MinimumAccountAge":7776000,
+		"MinimumAccountAgeLabel":"4 Months",
+		"EnableMinimumPlaytime":false,
+		"MinimumPlaytimeHours":5,
+		"EnableMinimumOwnedGames":true,
+		"MinimumOwnedGames":3,
+		"MinimumTotalPlaytimeHours":10,
+		
+	}
+]
