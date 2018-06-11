@@ -11,13 +11,13 @@ Citizen.CreateThread(function()
 	end, 'GET', json.encode({}), { ["Content-Type"] = 'application/json' })
 	
 	AddEventHandler('playerConnecting', function(name, setCallback, deferrals)
-
 		local numIds = GetPlayerIdentifiers(source)
 		deferrals.defer()
 		deferrals.update("Checking Steam Account.")
 		local s = source
 		local n = name
 		local deferrals = deferrals
+		
 		local decline = false
 		Wait(100)
 		local steamid = GetPlayerIdentifier(s,0)
@@ -32,6 +32,10 @@ Citizen.CreateThread(function()
 			return
 		end
 		
+		if #GetPlayers() == GetConvarInt("sv_maxclients", 30) then
+			deferrals.done("This Server is Full.")
+		end
+		print(#GetPlayers())
 		local steam64 = tonumber(string.gsub(steamid,"steam:", ""),16)
 		if not steam64 then
 			Wait(1000)
