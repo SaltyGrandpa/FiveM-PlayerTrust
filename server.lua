@@ -35,7 +35,6 @@ Citizen.CreateThread(function()
 		if #GetPlayers() == GetConvarInt("sv_maxclients", 30) then
 			deferrals.done("This Server is Full.")
 		end
-		print(#GetPlayers())
 		local steam64 = tonumber(string.gsub(steamid,"steam:", ""),16)
 		if not steam64 then
 			Wait(1000)
