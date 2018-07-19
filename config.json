@@ -12,7 +12,7 @@
 		"EnableMinimumOwnedGames":true,
 		"MinimumOwnedGames":3,
 		"MinimumTotalPlaytimeHours":10,
-		"maxStrikes":0,
+		"MaxStrikes":0,
 		
 	}
 ]

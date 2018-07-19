@@ -168,7 +168,7 @@ Citizen.CreateThread(function()
 		end
 
 		
-		if decline and strikes >= settings.maxStrikes then
+		if decline and strikes >= settings.MaxStrikes then
 			deferrals.done(string)
 		else
 			deferrals.done()
