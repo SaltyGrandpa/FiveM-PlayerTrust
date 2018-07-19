@@ -134,34 +134,41 @@ Citizen.CreateThread(function()
 		dots = dots.."."
 		deferrals.update("Checking Steam Account"..dots)
 		Wait(500)
+		local strikes = 0
 		string = "You are not allowed to join this server, reason(s): "
 		if config.EnableVACBans and vacBanned and vacBans >= config.MaxVACCount then
 			string = string.."[1] More than ".. config.MaxVACCount-1 .." VAC Ban(s) on Record "
 			decline = true
+			strikes = strikes+1
 		end
 		if config.EnableAccountAgeCheck and timecreated and (os.time() - timecreated) < config.MinimumAccountAge then
 			string = string.."[2] Account is younger than "..config.MinimumAccountAgeLabel.." "
 			decline = true
+			strikes = strikes+1
 		end
 		if config.EnableMinimumPlaytime and playtime and playtime < config.MinimumPlaytimeHours then
 			string = string.."[3] Less than "..config.MinimumPlaytimeHours.." hours playtime on FiveM ("..config.MinimumPlaytimeHours-playtime.." hours left)"
 			decline = true
+			strikes = strikes+1
 		end 
 		if config.EnableMinimumOwnedGames and ownedGames and ownedGames < config.MinimumOwnedGames then
 			string = string.."[4] Less than "..config.MinimumOwnedGames.." owned Games on Steam ("..config.MinimumOwnedGames-ownedGames.." games missing)"
 			decline = true
+			strikes = strikes+1
 		end
 		if globalplaytime and config.MinimumTotalPlaytimeHours > globalplaytime then
 			string = string.."[5] Less than "..config.MinimumTotalPlaytimeHours.." hours played on Steam ("..config.MinimumTotalPlaytimeHours-globalplaytime.." hours left)"
 			decline = true
+			strikes = strikes+1
 		end
 		if profileVisibility == 1 and (not globalplaytime or not playtime or not timecreated) then
 			string = string.."[6] Steam Account checks Failed, please set your Steam Profile to 'Public' and rejoin the Server."
 			decline = true
+			strikes = strikes+1
 		end
 
 		
-		if decline then
+		if decline and strikes >= settings.maxStrikes then
 			deferrals.done(string)
 		else
 			deferrals.done()
