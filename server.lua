@@ -1,4 +1,8 @@
 dots = "hahah im not a dot i have fooled you!!!!1111"
+function validResponse(text, statusCode)
+	return (text ~= nil and statusCode ~= nil and tonumber(statusCode) == 200)
+end
+
 Citizen.CreateThread(function()
 	config = json.decode( LoadResourceFile(GetCurrentResourceName(), "config.json") )[1]
 	
@@ -46,12 +50,16 @@ Citizen.CreateThread(function()
 		local vacBanned = false
 		PerformHttpRequest('http://api.steampowered.com/ISteamUser/GetPlayerBans/v1/?key='..config.APIKey..'&steamids='..steam64..'', function(statusCode, text, headers)
 		    if text then
-		        local info = json.decode(text)
-												
-						vacBanned = info['players'][1]['VACBanned']
-		        vacBans = info['players'][1]['NumberOfVACBans']
+				if validResponse(text, statusCode) then
+					local info = json.decode(text)
+													
+					vacBanned = info['players'][1]['VACBanned']
+					vacBans = info['players'][1]['NumberOfVACBans']
 
-				if info['players'][1]['DaysSinceLastBan'] > config.MaxDaysSinceLastBan then
+					if info['players'][1]['DaysSinceLastBan'] > config.MaxDaysSinceLastBan then
+						vacBanned = false
+					end
+				else
 					vacBanned = false
 				end
 
@@ -68,31 +76,39 @@ Citizen.CreateThread(function()
 		local timecreated = false
 		PerformHttpRequest('http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key='..config.APIKey..'&steamids='..steam64..'', function(statusCode, text, headers)
 		    if text then
-		        local info = json.decode(text)
-						if info['response']['players'][1]['timecreated'] then
-							timecreated = info['response']['players'][1]['timecreated']
-						else
-							timecreated = false
-						end
-						profileVisibility = info['response']['players'][1]['communityvisibilitystate']
-						gotAccountAge = true
+				if validResponse(text, statusCode) then
+					local info = json.decode(text)
+					if info['response']['players'][1]['timecreated'] then
+						timecreated = info['response']['players'][1]['timecreated']
+					else
+						timecreated = false
+					end
+					profileVisibility = info['response']['players'][1]['communityvisibilitystate']
+				else
+					timecreated = config.MinimumAccountAge
+				end
+				gotAccountAge = true
 		    end
 		end, 'GET', json.encode({}), { ["Content-Type"] = 'application/json' })
 		
 		local playtime = false
 		PerformHttpRequest('http://api.steampowered.com/IPlayerService/GetRecentlyPlayedGames/v0001/?key='..config.APIKey..'&steamid='..steam64..'´&format=json', function(statusCode, text, headers)
 			if text then
-	        local response = json.decode(text)
-	        local data = response['response']
+				if validResponse(text, statusCode) then
+					local response = json.decode(text)
+					local data = response['response']
 					if data.games then
-		        for i,v in pairs(data.games) do
-								if v.appid == 218 then
-		            	playtime = math.ceil(v.playtime_forever / 60)
-									break
-								end
-		        end
+						for i,v in pairs(data.games) do
+							if v.appid == 218 then
+								playtime = math.ceil(v.playtime_forever / 60)
+								break
+							end
+						end
 					end
-	    end
+				else
+					playtime = config.MinimumPlaytimeHours
+				end
+			end
 		end, 'GET', json.encode({}), { ["Content-Type"] = 'application/json' })
 		
 		local gotOwnedGames = false
@@ -100,8 +116,9 @@ Citizen.CreateThread(function()
 		local globalplaytime = false
 		PerformHttpRequest('http://api.steampowered.com/IPlayerService/GetOwnedGames/v0001/?key='..config.APIKey..'&steamid='..steam64..'´&format=json', function(statusCode, text, headers)
 			if text then
-	        local response = json.decode(text)
-	        local data = response['response']
+				if validResponse(text, statusCode) then
+					local response = json.decode(text)
+					local data = response['response']
 					if data.games then
 						globalplaytime = 0
 						for i,a in pairs(data.games) do
@@ -116,8 +133,12 @@ Citizen.CreateThread(function()
 					end
 					
 					ownedGames = data.game_count
-					gotOwnedGames = true
-	    end
+				else
+					globalplaytime = 9999
+					ownedGames = config.MinimumOwnedGames
+				end
+				gotOwnedGames = true
+			end
 		end, 'GET', json.encode({}), { ["Content-Type"] = 'application/json' })
 		
 		deferrals.update("Checking Steam Account."..dots)
